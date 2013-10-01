@@ -1,0 +1,6 @@
+# SPF related
+smtpd_recipient_restrictions = permit_mynetworks,
+        permit_sasl_authenticated,
+        check_policy_service unix:private/policy-spf,
+        reject_unauth_destination,
+        permit

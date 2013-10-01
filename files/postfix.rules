@@ -1,0 +1,3 @@
+*filter
+-A INPUT -p tcp --dport 25 -j ACCEPT -m comment --comment "postfix"
+COMMIT
