@@ -5,9 +5,8 @@ class postfix (
   $rootAlias,
   $mynetworks      = [],
   $inet_interfaces = 'all',
-  $dkim            = true,
-  $spf             = true,
   $motd            = true,
+  $firewall        = true,
 ) {
 
 
@@ -30,18 +29,6 @@ class postfix (
     rootAlias => $rootAlias,
   }
   class { 'postfix::service': }
-
-  if($dkim)
-  {
-    class { 'postfix::dkim':
-      hostname => $myhostname
-    }
-  }
-
-  if($spf)
-  {
-    class { 'postfix::spf': }
-  }
 
 
   # declare relationships

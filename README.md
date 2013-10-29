@@ -14,16 +14,24 @@ class { 'postfix':
   rootAlias       => 'monitoring@alkivi.fr',
   inet_interfaces => 'loopback-only',
   mynetworks      => [],
-  dkim            => true,
-  spf             => true,
   motd            => true,
 }
 ```
 This will do the typical install, configure and service management.
 
+### DKIM support
+```puppet
+class { 'postfix::dkim':
+  hostname => 'web.alkivi.fr',
+}
 
-If DKIM is setup, you will have to manually put a DKIM (TXT) entry in your dns as show in the files :
+you will have to manually put a DKIM (TXT) entry in your dns as show in the files :
 /etc/opendkim/your_domain_name/mail.txt
+
+### SPF support
+```puppet
+class { 'postfix::spf': }
+```
 
 For SPF, you have to do the same. A SPF DNS entry looks like:
 v=spf1  a:home.themartinets.com  ip4:92.168.20.253 mx:home.themartinets.com ~all

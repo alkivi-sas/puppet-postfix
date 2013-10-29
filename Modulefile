@@ -1,5 +1,5 @@
 name    'alkivi-postfix'
-version '0.0.1'
+version '0.1.0'
 source 'https://github.com/alkivi-sas/puppet-postfix'
 author 'alkivi'
 license 'LGPLv3'

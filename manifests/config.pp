@@ -49,10 +49,13 @@ class postfix::config (
 
   if($postfix::inet_interfaces == 'all')
   {
-    file { '/etc/iptables.d/25-postfix.rules':
-      source  => 'puppet:///modules/postfix/postfix.rules',
-      require => Package['alkivi-iptables'],
-      notify  => Service['alkivi-iptables'],
+    if($postfix::firewall)
+    {
+      file { '/etc/iptables.d/25-postfix.rules':
+        source  => 'puppet:///modules/postfix/postfix.rules',
+        require => Package['alkivi-iptables'],
+        notify  => Service['alkivi-iptables'],
+      }
     }
   }
 
