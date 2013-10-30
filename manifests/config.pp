@@ -33,11 +33,6 @@ class postfix::config (
     order   => 01,
   }
 
-  file { '/etc/postfix/header_checks':
-    content => template('postfix/header_checks.erb'),
-    mode    => '0755',
-  }
-
   # Add aliases
   # TODO : this sucks, make it better
 
