@@ -1,5 +1,10 @@
 class postfix::config (
   $rootAlias,
+  $myorigin        = $postfix::myorigin,
+  $myhostname      = $postfix::myhostname,
+  $mydestination   = $postfix::mydestination,
+  $mynetworks      = $postfix::mynetworks,
+  $inet_interfaces = $postfix::inet_interfaces,
 ) {
   File {
     ensure => present,
