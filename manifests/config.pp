@@ -1,5 +1,4 @@
 class postfix::config (
-  $rootAlias,
   $myorigin        = $postfix::myorigin,
   $myhostname      = $postfix::myhostname,
   $mydestination   = $postfix::mydestination,
@@ -36,15 +35,6 @@ class postfix::config (
     target  => '/etc/postfix/master.cf',
     content => template('postfix/master.cf.erb'),
     order   => 01,
-  }
-
-  # Add aliases
-  # TODO : this sucks, make it better
-
-  exec { 'update-root-alias':
-    command => "echo \"root: ${rootAlias}\" >> /etc/aliases && newaliases",
-    unless  => 'grep -q \'root: \' /etc/aliases',
-    path    =>  ['/usr/bin', '/usr/sbin', '/bin'],
   }
 
   if($postfix::inet_interfaces == 'all')

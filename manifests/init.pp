@@ -2,7 +2,6 @@ class postfix (
   $myorigin,
   $myhostname,
   $mydestination,
-  $rootAlias,
   $mynetworks      = [],
   $inet_interfaces = 'all',
   $motd            = true,
@@ -17,7 +16,6 @@ class postfix (
 
   validate_string($myorigin)
   validate_string($myhostname)
-  validate_string($rootAlias)
   validate_string($inet_interfaces)
   validate_array($mynetworks)
   validate_array($mydestination)
@@ -25,9 +23,7 @@ class postfix (
   # declare all parameterized classes
   class { 'postfix::params': }
   class { 'postfix::install': }
-  class { 'postfix::config':
-    rootAlias => $rootAlias,
-  }
+  class { 'postfix::config': }
   class { 'postfix::service': }
 
 
