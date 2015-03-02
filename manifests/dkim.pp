@@ -1,18 +1,16 @@
 class postfix::dkim (
-  $hostname,
-  $certificate_name = 'mail',
   $dns_servers      = ['ns102.ovh.net', 'dns102.ovh.net'],
   $canonicalization = 'relaxed/relaxed',
+  $keyTable         = '/etc/opendkim/KeyTable',
+  $trustedHost      = '/etc/opendkim/TrustedHosts',
+  $signingTable     = '/etc/opendkim/SigningTable',
+  $configFile       = '/etc/opendkim.conf',
 ) {
 
   validate_string($hostname)
 
   $packages     = ['opendkim', 'opendkim-tools']
   $service      = 'opendkim'
-  $keyTable     = '/etc/opendkim/KeyTable'
-  $trustedHost  = '/etc/opendkim/TrustedHosts'
-  $signingTable = '/etc/opendkim/SigningTable'
-
 
   File {
     ensure  => present,
@@ -34,6 +32,12 @@ class postfix::dkim (
     enable     => true,
   }
 
+  Concat {
+    owner   => 'opendkim',
+    group   => 'opendkim',
+    mode    => '0644',
+  }
+
 
   # Install related package
   package { $packages: }
@@ -47,37 +51,15 @@ class postfix::dkim (
     mode   => '0755'
   }
 
-  file { "/etc/opendkim/${hostname}":
-    ensure  => directory,
-    mode    => '0700',
-    require => File['/etc/opendkim'],
-  }
+  # Config files init will contain fragment from zones
+  concat { $keyTable: }
+  concat { $signingTable: }
+  concat { $trustedHost: }
 
-  # Certificates
-  exec { 'generate-dkim-certificate':
-    command => "opendkim-genkey -r -h rsa-sha256 -d ${hostname} -D /etc/opendkim/${hostname} -s ${certificate_name} && mv /etc/opendkim/${hostname}/${certificate_name}.private /etc/opendkim/${hostname}/${certificate_name} && chmod u=rw,go-rwx /etc/opendkim/${hostname}/* && chown opendkim:opendkim /etc/opendkim/${hostname}/*",
-    creates => "/etc/opendkim/${hostname}/${certificate_name}",
-    path    => ['/usr/bin', '/usr/sbin', '/bin'],
-    require => [ File["/etc/opendkim/${hostname}"], Package[$packages] ],
-  }
 
-  # Config files
-  file { $keyTable:
-    content => template('postfix/dkim/keyTable.erb'),
-    require => File['/etc/opendkim'],
-  }
 
-  file { $signingTable:
-    content => template('postfix/dkim/signingTable.erb'),
-    require => File['/etc/opendkim'],
-  }
 
-  file { $trustedHost:
-    content => template('postfix/dkim/trustedHost.erb'),
-    require => File['/etc/opendkim'],
-  }
-
-  file { '/etc/opendkim.conf':
+  file { $configFile:
     content => template('postfix/dkim/opendkim.conf.erb')
   }
 
@@ -85,6 +67,12 @@ class postfix::dkim (
     target  => '/etc/postfix/main.cf',
     content => template('postfix/dkim/main.cf.erb'),
     order   => 10,
+  }
+
+  concat::fragment { "base-trustedHost":
+    target  => $postfix::dkim::trustedHost,
+    content => template('postfix/dkim/trustedHost.erb'),
+    order   => 1,
   }
 
   # Manual need
